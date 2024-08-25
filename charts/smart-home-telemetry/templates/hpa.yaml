@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "smart-home-monolith.fullname" . }}
+  name: {{ include "smart-home-telemetry.fullname" . }}
   labels:
-    {{- include "smart-home-monolith.labels" . | nindent 4 }}
+    {{- include "smart-home-telemetry.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "smart-home-monolith.fullname" . }}
+    name: {{ include "smart-home-telemetry.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:

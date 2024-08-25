@@ -1,0 +1,72 @@
+asyncapi: 3.0.0
+info:
+  title: SmartHome Kafka
+  version: 1.0.0
+servers:
+  production:
+    host: localhost:9092
+    description: Kafka broker running in a central warehouse
+    protocol: kafka
+channels:
+  telemetry:
+    messages:
+      telemetry:
+        payload:
+          type: object
+          properties:
+            id:
+              type: integer
+            currentTemperature:
+              type: number
+            lastUpdated:
+              type: string
+              format: date-time
+  registerDevice:
+    address: "smarthome.1.0.event.register"
+    description: Канал для сообщений о регистрации устройства
+    messages:
+      deviceRegistrationInfo:
+        description: Сообщение с регистрационной информацией
+        payload:
+          type: object
+          required:
+            - providerId
+            - userId
+            - sentAt
+          properties:
+            providerId:
+              type: string
+              format: uuid
+              description: Идентификатор провайдера.
+            userId:
+              type: string
+              format: uuid
+              description: ID пользователя.
+            authCode:
+              type: string
+              format: base64
+              description: Код авторизации.
+              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+            sentAt:
+              type: string
+              format: date-time
+              description: Дата и время отправки сообщения.
+operations:
+  sendTelemetry:
+    action: send
+    channel:
+      $ref: "#/channels/telemetry"
+  receiveTelemetry:
+    action: receive
+    channel:
+      $ref: "#/channels/telemetry"
+  sendRegisterDevice:
+    action: send
+    description: Операция по отправке сообщений о регистрации цстройства
+    channel:
+      $ref: "#/channels/registerDevice"
+  receiveRegisterDevice:
+    action: receive
+    description: Операция по получению сообщений о регистрации цстройства
+    channel:
+      $ref: "#/channels/registerDevice"

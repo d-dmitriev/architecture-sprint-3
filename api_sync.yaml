@@ -1,0 +1,209 @@
+openapi: 3.0.0
+info:
+  title: SmatrHome REST API
+  version: 0.1.0
+x-kusk:
+  rate_limit:
+    requests_per_unit: 20
+    unit: minute
+  path:
+    prefix: /api
+  upstream:
+    service:
+      name: smart-home-monolith
+      namespace: default
+      port: 8080
+paths:
+  /providers:
+    get:
+      summary: Получение списка провайдеров.
+      responses:
+        "200":
+          description: Ответ со описком провадеров
+          content:
+            application/json:
+              schema:
+                type: array
+                properties:
+                  id:
+                    type: number
+                  name:
+                    type: string
+                example:
+                  - id: 1
+                    name: "YELIGHT"
+                    url: "https://yelight.com/auth"
+                  - id: 2
+                    name: "xiaomi"
+                    url: "https://mi.com/application/auth"
+  /providers/{id}:
+    get:
+      summary: Получение информации об устройстве (провайдере)
+      parameters:
+        - in: header
+          name: authorization
+          description: JWT токен
+          required: true
+          schema:
+            type: string
+            example: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+        - in: path
+          name: id
+          description: ID провайдера
+          required: true
+          schema:
+            type: number
+            example: 1
+      responses:
+        "200":
+          description: Информация об устройстве
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                    example: xiaomi
+  /providers/{id}/devices:
+    get:
+      summary: Получение списка устройств провайдера
+      parameters:
+        - in: header
+          name: authorization
+          description: JWT токен
+          required: true
+          schema:
+            type: string
+            example: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+        - in: path
+          name: id
+          description: ID провайдера
+          required: true
+          schema:
+            type: number
+            example: 1
+      responses:
+        "200":
+          description: Список устройств
+          content:
+            application/json:
+              schema:
+                type: array
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  operations:
+                    type: object
+                    additionalProperties:
+                      type: object
+                      properties:
+                        description:
+                          type: string
+                        type:
+                          type: string
+                        minimum:
+                          type: number
+                        maximum:
+                          type: number
+                example:
+                  - id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                    name: Автоматический ворота
+                    operations:
+                      on:
+                        type: boolean
+                        description: Открыть/закрыть ворота
+                  - id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                    name: Лампочка без регулировки
+                    operations:
+                      on:
+                        type: boolean
+                        description: Включение/выключение освещения
+                  - id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                    name: Лампочка c регулировкой
+                    operations:
+                      on:
+                        type: boolean
+                        description: Включение/выключение освещения
+                      dim:
+                        type: number
+                        description: Установить интенсивность освещения
+                        minimum: 0
+                        maximum: 256
+                  - id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                    name: Термостат
+                    operations:
+                      on:
+                        type: boolean
+                        description: Включение/выключение освещения
+                      dim:
+                        type: number
+                        description: Изменить температуру
+                        minimum: 18
+                        maximum: 30
+
+  /providers/{id}/auth:
+    get:
+      summary: Добавление устройства (подключение провайдера)
+      parameters:
+        - in: header
+          name: authorization
+          description: JWT токен
+          required: true
+          schema:
+            type: string
+            example: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+        - in: path
+          name: id
+          description: ID провайдера
+          required: true
+          schema:
+            type: number
+            example: 1
+      responses:
+        "200":
+          description: Информация для подключения
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loginUrl:
+                    type: string
+                    example: https://mi.com/application/auth?code=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9&callback_url=https://smarthome.com/api/providers/1/callback
+  /providers/{id}/callback:
+    get:
+      summary: Сервис обратного вызова для получения ответа от провайдера
+      parameters:
+        - in: path
+          name: id
+          description: id провайдера
+          required: true
+          schema:
+            type: number
+            example: 1
+        - in: query
+          name: code
+          description: код авторизации
+          required: true
+          schema:
+            type: string
+            example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+      responses:
+        "301":
+          description: Перенаправление на страницу с результатами
+          headers:
+            location:
+              schema:
+                type: string
+                description: Адрес страницы с результатами
+                example: https://smarthome.com/result/1/
+
+        "500":
+          description: Внутренняя ошибка сервиса

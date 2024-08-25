@@ -1,0 +1,33 @@
+openapi: 3.0.0
+info:
+  title: simple-api
+  version: 0.1.0
+x-kusk:
+  auth:
+    jwt:
+      providers:
+        - name: kusk-gateway-jwt
+          issuer: http://localhost:8080/realms/master
+          audiences:
+            - master-realm
+          jwks: http://keycloak.keycloak.svc.cluster.local/realms/master/protocol/openid-connect/certs
+  upstream:
+    service:
+      name: hello-world-svc
+      namespace: default
+      port: 8080
+paths:
+  /hello:
+    get:
+      responses:
+        "200":
+          description: A simple hello world!
+          content:
+            application/json:
+              example:
+                message: Hello from a mocked response!
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string

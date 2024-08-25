@@ -1,0 +1,14 @@
+listeners:
+  client:
+    protocol: PLAINTEXT
+
+provisioning:
+  enabled: true
+  topics:
+    - name: telemetry
+      partitions: 3
+      replicationFactor: 1
+
+metrics:
+  jmx:
+    enabled: true

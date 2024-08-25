@@ -1,0 +1,13 @@
+apiVersion: gateway.kusk.io/v1alpha1
+kind: StaticRoute
+metadata:
+  name: web-app-sample
+spec:
+  fleet:
+    name: kusk-gateway-envoy-fleet
+    namespace: kusk-system
+  upstream:
+    service:
+      name: keycloak
+      namespace: keycloak
+      port: 80

@@ -1,0 +1,18 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+spec:
+  meshConfig:
+    enableTracing: true
+    defaultConfig:
+      tracing:
+        zipkin:
+          address: jaeger-collector.istio-system.svc.cluster.local:9411
+        sampling: 100.0
+        max_path_tag_length: 256
+        custom_tags:
+          clusterID:
+            environment:
+              name: ISTIO_META_CLUSTER_ID
+          pod:
+            environment:
+              name: POD_NAME
