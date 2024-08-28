@@ -5,10 +5,10 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/d-dmitriev/architecture-sprint-3
+  repository: ghcr.io/d-dmitriev/architecture-sprint-3/telemetry
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "telemetry-0.1.9"
+  tag: "latest"
 
 imagePullSecrets:
   - name: ghcr
@@ -28,9 +28,7 @@ serviceAccount:
   name: ""
 
 podAnnotations: {}
-podLabels:
-  app: smart-home-telemetry
-  version: 0.1.9
+podLabels: {}
 
 podSecurityContext:
   {}

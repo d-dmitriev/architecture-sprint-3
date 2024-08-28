@@ -47,7 +47,7 @@ jobs:
           context: smart-home-telemetry
           push: true
           tags: |
-            ghcr.io/d-dmitriev/architecture-sprint-3:telemetry
-            ghcr.io/d-dmitriev/architecture-sprint-3:telemetry-0.1.${{ github.run_number }}
+            ghcr.io/d-dmitriev/architecture-sprint-3/telemetry:latest
+            ghcr.io/d-dmitriev/architecture-sprint-3/telemetry:0.1.${{ github.run_number }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
