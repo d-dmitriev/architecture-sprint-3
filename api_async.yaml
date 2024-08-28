@@ -15,7 +15,8 @@ channels:
           type: object
           properties:
             id:
-              type: integer
+              type: string
+              format: uuid
             currentTemperature:
               type: number
             lastUpdated:

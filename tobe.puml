@@ -93,7 +93,7 @@ Container_Boundary(web_app, "Web Application") {
 '    Component(admin_ui, "Интерфейс администратора")
 }
 Container_Boundary(alias3, "API Gateway") {
-    Component(api_gateway, "Kusk")
+    Component(api_gateway, "Istoi")
 }
 Rel(user_ui, api_gateway, "Команды управления")
 'Rel(admin_ui, api_gateway, "Просмотр статистики")

@@ -178,3 +178,61 @@ istioctl dashboard kiali
 ```bash
 minikube delete
 ```
+
+## Описание решения
+
+Система разделена на домены:
+
+- регистрации пользователей
+- взаимодействие с производителем (для каждого производителя устройств может потребоваться интеграция с их API и шлюзом для обмена информацией о состоянии устройств)
+- регистрации устройств
+- управления устройствами
+- управления сценариями
+- телеметрии
+
+[Ссылка на схему PlantUML](https://raw.githubusercontent.com/d-dmitriev/architecture-sprint-3/sprint_3/tobe.puml)
+
+Описаны следующие диаграммы:
+
+- C4 System Context diagram
+- C4 Container diagram
+- C4 Component diagram
+- C4 Code diagram - Sequence diagram
+  - Сервиса взаимодействия с производителем - Добавление устройства
+  - Сервис регистрации устройств - Добавление устройства
+  - Сервис регистрации устройств - Просмотр информации об устройстве
+- Entity relation diagram
+  - Монолит AsIs
+  - Сервис регистрации пользователей
+  - Сервис регистрации устройств
+  - Сервис телеметрии
+  - Сервис управления устройствами
+  - Сервис управления сценариями
+
+[Ссылка на OpenAPI](https://raw.githubusercontent.com/d-dmitriev/architecture-sprint-3/sprint_3/api_sync.yaml)
+
+[Ссылка на AsyncAPI](https://raw.githubusercontent.com/d-dmitriev/architecture-sprint-3/sprint_3/api_async.yaml)
+
+В реализованных примерах микросервисов настроено взаимодействие через kafka. Подключен модуль OpenTelemetry, для передачи трэйсов в Jaeger.
+
+Так же настроен Prometeus, с отображением информации из Istoi и дополнительно настроена передача мертик из kafka.
+
+Для просмотра данных из Prometeus так-же настроена Grafana.
+
+В Istio Gateway включена авторизация запросов к сервису monolith, через Keycloak.
+
+Так же в установку добавлен Kiali для просмотра состояния мэша.
+
+В GitHub Actions настроено 4 пайплайна:
+
+- для сборки smart-home-monolith
+- для сборки smart-home-telemetry
+- для сборки helm чарта smart-home-monolith
+- для сборки helm чарта smart-home-telemetry
+
+Все собранные артефакты публикуются в GitHub Cloud Registry.
+
+При публикации образа приложений в чатрах оботновляется appVersion, с автоматическим пушем в репозиторий.
+При публикации чарта оботновляется version в чарте, с автоматическим пушем в репозиторий.
+
+Для универсальности настройки прибожений и образов в application.yml добавлены переменные окружения с адресами postgres и kafka
