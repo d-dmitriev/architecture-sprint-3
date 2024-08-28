@@ -34,8 +34,8 @@ jobs:
           context: smart-home-monolith
           push: true
           tags: |
-            ghcr.io/d-dmitriev/architecture-sprint-3:latest
-            ghcr.io/d-dmitriev/architecture-sprint-3:0.1.${{ github.run_number }}
+            ghcr.io/d-dmitriev/architecture-sprint-3/monolith:latest
+            ghcr.io/d-dmitriev/architecture-sprint-3/monolith:0.1.${{ github.run_number }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Build and push 2
