@@ -32,6 +32,10 @@ jobs:
       - name: Update verison
         run: |
            find ./charts/smart-home-monolith -type f -name "Chart.yaml" -print0 | xargs -0 sed -i "s/version: 0.1.*/version: $IMAGE_TAG/g"
+      - name: helm push
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          helm push $CHART_NAME-$IMAGE_TAG.tgz oci://ghcr.io/${{ github.repository_owner }}/helm-charts
       - name: Commit and push changes
         uses: devops-infra/action-commit-push@master
         with:
@@ -39,7 +43,3 @@ jobs:
           commit_prefix: "[skip ci]"
           commit_message: Update chart version to 0.1.${{ github.run_number }}
           force: false
-      - name: helm push
-        if: ${{ github.event_name == 'push' }}
-        run: |
-          helm push $CHART_NAME-$IMAGE_TAG.tgz oci://ghcr.io/${{ github.repository_owner }}/helm-charts
