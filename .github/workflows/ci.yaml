@@ -51,3 +51,13 @@ jobs:
             ghcr.io/d-dmitriev/architecture-sprint-3/telemetry:0.1.${{ github.run_number }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      - name: Update verison
+        run: |
+           find . -type f -name "Chart.yaml" -print0 | xargs -0 sed -i "s/appVersion: \"*.*.*\"/appVersion: \"0.1.${{ github.run_number }}\"/g"
+      - name: Commit and push changes
+        uses: devops-infra/action-commit-push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          commit_prefix: "[skip ci]"
+          commit_message: Update app version to 0.1.${{ github.run_number }}
+          force: false
