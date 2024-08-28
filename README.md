@@ -209,8 +209,10 @@ minikube delete
   - Сервис управления устройствами
   - Сервис управления сценариями
 
+Описано синхронное API (изначально для kusk, но потом были выявлены проблемы в работе с аторизацией, для динамических путей, когда есть path-параметр, аторизация не работала)
 [Ссылка на OpenAPI](https://raw.githubusercontent.com/d-dmitriev/architecture-sprint-3/sprint_3/api_sync.yaml)
 
+Описано асинхронное API для kafka
 [Ссылка на AsyncAPI](https://raw.githubusercontent.com/d-dmitriev/architecture-sprint-3/sprint_3/api_async.yaml)
 
 В реализованных примерах микросервисов настроено взаимодействие через kafka. Подключен модуль OpenTelemetry, для передачи трэйсов в Jaeger.
