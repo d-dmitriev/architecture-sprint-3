@@ -62,7 +62,9 @@ provider_installation {
 
 ```bash
 cd terraform
-terraform apply
+
+terraform init
+terraform apply -auto-approve
 ```
 
 ## Проверяем работоспособность
