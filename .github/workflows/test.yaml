@@ -1,5 +1,8 @@
 on:
-  test:
+  push:
+    paths:
+     - charts/smart-home-monolith
+     
 env:
   CHART_NAME: smart-home-monolith
   IMAGE_TAG: 0.1.0
