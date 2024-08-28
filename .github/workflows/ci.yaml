@@ -22,22 +22,22 @@ jobs:
       - name: Build and push 1
         uses: docker/build-push-action@v6
         env:
-          DOCKER_BUILD_SUMMARY: false
+          DOCKER_BUILD_SUMMARY: true
         with:
           platforms: linux/amd64,linux/arm64
           context: smart-home-monolith
-          push: false
+          push: true
           tags: ghcr.io/d-dmitriev/architecture-sprint-3:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Build and push 2
         uses: docker/build-push-action@v6
         env:
-          DOCKER_BUILD_SUMMARY: false
+          DOCKER_BUILD_SUMMARY: true
         with:
           platforms: linux/amd64,linux/arm64
           context: smart-home-telemetry
-          push: false
+          push: true
           tags: ghcr.io/d-dmitriev/architecture-sprint-3:telemetry
           cache-from: type=gha
           cache-to: type=gha,mode=max
