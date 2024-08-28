@@ -28,6 +28,3 @@ dependencies:
     version: "15.5.20"
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: postgresql.enabled
-
-    # version: "11.9.13"
-    # repository: https://charts.bitnami.com/bitnami
