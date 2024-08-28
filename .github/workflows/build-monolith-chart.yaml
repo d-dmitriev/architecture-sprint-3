@@ -23,6 +23,9 @@ jobs:
       - name: helm login
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | helm registry login ghcr.io -u $ --password-stdin
+      - name: helm dependency update
+        run: |
+          helm dependency update ./charts/$CHART_NAME
       - name: helm package
         run: |
           helm package ./charts/$CHART_NAME --version $IMAGE_TAG
