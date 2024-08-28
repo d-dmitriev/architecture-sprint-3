@@ -1,10 +1,12 @@
+name: build-telemetry-chart
+
 on:
   push:
     paths:
-     - charts/smart-home-monolith
-     
+     - charts/smart-home-telemetry/**
+
 env:
-  CHART_NAME: smart-home-monolith
+  CHART_NAME: smart-home-telemetry
   IMAGE_TAG: 0.1.0
 jobs:
   job:

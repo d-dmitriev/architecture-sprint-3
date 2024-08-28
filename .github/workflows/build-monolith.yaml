@@ -1,9 +1,9 @@
-name: ci
+name: build-monolith
 
 on:
   push:
     paths:
-     - smart-home-monolith
+     - smart-home-monolith/**
 
 jobs:
   docker:

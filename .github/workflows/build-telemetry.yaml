@@ -1,4 +1,4 @@
-name: ci
+name: build-telemetry
 
 on:
   push:
