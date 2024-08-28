@@ -7,7 +7,7 @@ on:
 
 env:
   CHART_NAME: smart-home-telemetry
-  IMAGE_TAG: 0.1.0
+  IMAGE_TAG: 0.1.${{ github.run_number }}
 jobs:
   job:
     runs-on: ubuntu-latest
@@ -23,9 +23,22 @@ jobs:
       - name: helm login
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | helm registry login ghcr.io -u $ --password-stdin
+      - name: helm dependency update
+        run: |
+          helm dependency update ./charts/$CHART_NAME
       - name: helm package
         run: |
           helm package ./charts/$CHART_NAME --version $IMAGE_TAG
+      - name: Update verison
+        run: |
+           find ./charts/smart-home-telemetry -type f -name "Chart.yaml" -print0 | xargs -0 sed -i "s/version: 0.1.*/version: $IMAGE_TAG/g"
+      - name: Commit and push changes
+        uses: devops-infra/action-commit-push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          commit_prefix: "[skip ci]"
+          commit_message: Update chart version to ${{ IMAGE_TAG }}
+          force: false
       - name: helm push
         if: ${{ github.event_name == 'push' }}
         run: |
