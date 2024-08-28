@@ -3,7 +3,7 @@ name: ci
 on:
   push:
     paths:
-     - smart-home-telemetry
+     - smart-home-telemetry/**
 
 jobs:
   docker:
