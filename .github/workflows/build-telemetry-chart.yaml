@@ -37,7 +37,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           commit_prefix: "[skip ci]"
-          commit_message: Update chart version to ${{ IMAGE_TAG }}
+          commit_message: Update chart version to 0.1.${{ github.run_number }}
           force: false
       - name: helm push
         if: ${{ github.event_name == 'push' }}
