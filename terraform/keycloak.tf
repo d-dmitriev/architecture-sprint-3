@@ -1,4 +1,7 @@
 resource "helm_release" "keycloak" {
+    depends_on = [
+        helm_release.kafka
+    ]
     repository = "oci://registry-1.docker.io/bitnamicharts"
     name = "keycloak"
     chart = "keycloak"

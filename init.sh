@@ -1,6 +1,6 @@
 #!/bin/bash
 
-minikube start
+minikube start --cpus='6'
 kubectl create secret docker-registry ghcr --docker-server=https://ghcr.io --docker-username=d-dmitriev --docker-password=${GITHUB_TOKEN} -n default
 # istioctl install -y
 istioctl install -f ./tracing.yaml -y

@@ -3,7 +3,11 @@ listeners:
     protocol: PLAINTEXT
 
 provisioning:
-  enabled: true
+  enabled: false
+  waitForKafka: false
+  useHelmHooks: false
+  numPartitions: 1
+  replicationFactor: 1
   topics:
     - name: telemetry
       partitions: 3
