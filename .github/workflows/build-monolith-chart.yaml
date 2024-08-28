@@ -31,7 +31,7 @@ jobs:
           helm package ./charts/$CHART_NAME --version $IMAGE_TAG
       - name: Update verison
         run: |
-           find ./charts/smart-home-monolith -type f -name "Chart.yaml" -print0 | xargs -0 sed -i "s/version: *.*.*/version: $IMAGE_TAG/g"
+           find ./charts/smart-home-monolith -type f -name "Chart.yaml" -print0 | xargs -0 sed -i "s/version: 0.1.*/version: $IMAGE_TAG/g"
       - name: Commit and push changes
         uses: devops-infra/action-commit-push@master
         with:
