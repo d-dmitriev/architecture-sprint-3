@@ -12,7 +12,7 @@ public class TelemetryKafkaListener {
 
     @KafkaListener(topics = "telemetry", concurrency = "2")
     public void listen(TemperatureSensorDto message) {
-        System.out.println("Received message at group sample07-1: " + message.getCurrentTemperature());
+        System.out.println("Received message at group smart-home-monolith: " + message.getCurrentTemperature());
 //        temperatureSensorService.initTemperatureSensor(message);
     }
 }
