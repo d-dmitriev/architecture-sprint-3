@@ -9,6 +9,10 @@ jobs:
     permissions:
       packages: write
     steps:
+      - name: Output Run Id
+        run: echo ${{ github.run_id }}
+      - name: Output Run Number
+        run: echo ${{ github.run_number }}
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up QEMU
