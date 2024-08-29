@@ -133,7 +133,7 @@ curl --location 'http://localhost:8080/api/temperature' \
 Вызовет отправку сообщениея в Kafka, которое получит микросервис телеметрии и сохранит в своей базе
 
 ```bash
-curl --location --request POST 'http://localhost:8080/api/temperature/2/set-temperature?temperature=22.4' \
+curl --location --request POST 'http://localhost:8080/api/temperature/1/set-temperature?temperature=22.4' \
 --header "Authorization: Bearer $TOKEN_TO_COPY"
 ```
 
