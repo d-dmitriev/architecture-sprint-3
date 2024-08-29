@@ -6,8 +6,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-public class TemperatureSensorDto {
+public class TelemetryDto {
     private UUID id;
+    private UUID deviceId;
     private double currentTemperature;
     private LocalDateTime lastUpdated;
 }
