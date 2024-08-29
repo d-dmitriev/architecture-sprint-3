@@ -111,6 +111,7 @@ curl --location 'http://localhost:8080/api/temperature' \
 --header "Authorization: Bearer $TOKEN_TO_COPY" \
 --data '{
   "id": 1,
+  "deviceId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "currentTemperature": 20.3,
   "lastUpdated": "2024-08-20T22:55:04.425"
 }'
@@ -121,6 +122,7 @@ curl --location 'http://localhost:8080/api/temperature' \
 ```json
 {
   "id": 1,
+  "deviceId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "currentTemperature": 20.3,
   "lastUpdated": "2024-08-20T22:55:04.425"
 }
@@ -131,8 +133,28 @@ curl --location 'http://localhost:8080/api/temperature' \
 Вызовет отправку сообщениея в Kafka, которое получит микросервис телеметрии и сохранит в своей базе
 
 ```bash
-curl --location --request POST 'http://localhost:8080/api/temperature/2/set-temperature?temperature=22.0' \
+curl --location --request POST 'http://localhost:8080/api/temperature/2/set-temperature?temperature=22.4' \
 --header "Authorization: Bearer $TOKEN_TO_COPY"
+```
+
+### Получение последних данных телеметрии
+
+Возвращает последнее полученное значение телеметрии для устройства
+
+```bash
+curl --location 'http://localhost:8080/api/devices/3fa85f64-5717-4562-b3fc-2c963f66afa6/telemetry/latest' \
+--header "Authorization: Bearer $TOKEN_TO_COPY"
+```
+
+### Ответ
+
+```json
+{
+  "id": "e27d48ea-4ebb-4799-ab50-9fd585ba1643",
+  "deviceId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "currentTemperature": 22.4,
+  "lastUpdated": "2024-08-29T22:05:10.486934"
+}
 ```
 
 ### Проверка трэйса в Jaeger

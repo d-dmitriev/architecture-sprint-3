@@ -366,6 +366,88 @@ paths:
                 status: 500
                 error: "Internal Server Error"
                 path: "/api/temperature/2/set-temperature"
+  /devices/{id}/telemetry/latest:
+    get:
+      summary: Получение последних данных телеметрии.
+      description: Возвращает последнее полученное значение телеметрии для устройства.
+      parameters:
+        - in: path
+          name: id
+          description: Идентификатор сенсора
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        "200":
+          description: Последние данные телеметрии
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  deviceId:
+                    type: string
+                    format: uuid
+                  currentTemperature:
+                    type: number
+                    description: Текущая температура
+                    example: 18.2
+                  lastUpdated:
+                    type: string
+                    format: local-date-time
+                    example: "2024-08-20T22:55:04.425"
+        "500":
+          description: Ошибка сервиса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_type"
+              example:
+                timestamp: "2024-08-18T20:58:05.337+00:00"
+                status: 500
+                error: "Internal Server Error"
+                path: "/api/devices/3fa85f64-5717-4562-b3fc-2c963f66afa6/telemetry/latest"
+  /devices/{id}/telemetry:
+    get:
+      summary: Получение исторических данных телеметрии.
+      description: Возвращает исторические данные телеметрии для устройства за определённый период времени.
+      parameters:
+        - in: path
+          name: id
+          description: Идентификатор устройства
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        "200":
+          description: Список с данными телеметрии
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    deviceId:
+                      type: string
+                      format: uuid
+                    currentTemperature:
+                      type: number
+                      description: Текущая температура
+                      example: 18.2
+                    lastUpdated:
+                      type: string
+                      format: local-date-time
+                      example: "2024-08-20T22:55:04.425"
 components:
   schemas:
     error_type:

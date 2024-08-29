@@ -70,10 +70,36 @@ resource "kubernetes_manifest" "smart-home-monolith" {
       ]
       http = [
         {
+          match = [
+            {
+              uri = {
+                prefix: "/api/temperature"
+              }
+            }
+          ]
           route = [
             {
               destination = {
                 host = "smart-home-monolith"
+                port = {
+                  number = 8080
+                }
+              }
+            }
+          ]
+        },
+        {
+          match = [
+            {
+              uri = {
+                prefix: "/api/devices"
+              }
+            }
+          ]
+          route = [
+            {
+              destination = {
+                host = "smart-home-telemetry"
                 port = {
                   number = 8080
                 }
