@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 //import ru.yandex.practicum.smarthome.dto.TelemetryDto;
+import ru.yandex.practicum.smarthome.dto.TelemetryDto;
 import ru.yandex.practicum.smarthome.dto.TemperatureSensorDto;
 import ru.yandex.practicum.smarthome.entity.TemperatureSensor;
 import ru.yandex.practicum.smarthome.repository.TemperatureSensorRepository;
@@ -19,7 +20,7 @@ import java.time.LocalDateTime;
 public class TemperatureSensorServiceImpl implements TemperatureSensorService {
     private final TemperatureSensorRepository temperatureSensorRepository;
     @Autowired
-    private KafkaTemplate<String, TemperatureSensorDto> kafkaTemplate;
+    private KafkaTemplate<String, TelemetryDto> kafkaTemplate;
 
     @Override
     public TemperatureSensorDto initTemperatureSensor(TemperatureSensorDto temperatureSensorDto) {
@@ -42,12 +43,12 @@ public class TemperatureSensorServiceImpl implements TemperatureSensorService {
 //        t.setTemperature(temperature);
 //        kafkaTemplate.send("telemetry", t);
 
-//        TemperatureSensor temperatureSensor = temperatureSensorRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("TemperatureSensor not found"));
+        TemperatureSensor temperatureSensor = temperatureSensorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("TemperatureSensor not found"));
 //        temperatureSensor.setCurrentTemperature(temperature);
 //        temperatureSensorRepository.save(temperatureSensor);
-        TemperatureSensorDto t = new TemperatureSensorDto();
-//        t.setId(id);
+        TelemetryDto t = new TelemetryDto();
+        t.setDeviceId(temperatureSensor.getDeviceId());
         t.setCurrentTemperature(temperature);
         t.setLastUpdated(LocalDateTime.now());
         kafkaTemplate.send("telemetry", t);
@@ -63,6 +64,7 @@ public class TemperatureSensorServiceImpl implements TemperatureSensorService {
     private TemperatureSensorDto convertToDto(TemperatureSensor temperatureSensor) {
         TemperatureSensorDto dto = new TemperatureSensorDto();
         dto.setId(temperatureSensor.getId());
+        dto.setDeviceId(temperatureSensor.getDeviceId());
         dto.setCurrentTemperature(temperatureSensor.getCurrentTemperature());
         dto.setLastUpdated(temperatureSensor.getLastUpdated());
         return dto;
@@ -71,6 +73,7 @@ public class TemperatureSensorServiceImpl implements TemperatureSensorService {
     private TemperatureSensor convertFromDto(TemperatureSensorDto temperatureSensorDto) {
         TemperatureSensor temperatureSensor = new TemperatureSensor();
         temperatureSensor.setId(temperatureSensorDto.getId());
+        temperatureSensor.setDeviceId(temperatureSensorDto.getDeviceId());
         temperatureSensor.setCurrentTemperature(temperatureSensorDto.getCurrentTemperature());
         temperatureSensor.setLastUpdated(temperatureSensorDto.getLastUpdated());
         return temperatureSensor;
