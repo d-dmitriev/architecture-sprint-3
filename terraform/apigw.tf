@@ -201,11 +201,10 @@ resource "kubernetes_manifest" "require_jwt" {
       action = "ALLOW"
       rules = [
         {
-          from = [
+          when = [
             {
-              source = {
-                requestPrincipals: ["*"]
-              }
+              key = "request.auth.claims[azp]"
+              values: ["admin-cli"]
             }
           ]
         }
