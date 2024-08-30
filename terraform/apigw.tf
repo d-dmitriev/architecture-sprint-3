@@ -80,12 +80,12 @@ resource "kubernetes_manifest" "smart-home-telemetry-lb" {
   }
 }
 
-resource "kubernetes_manifest" "smart-home-monolith" {
+resource "kubernetes_manifest" "smart-home" {
   manifest = {
     apiVersion = "networking.istio.io/v1alpha3"
     kind       = "VirtualService"
     metadata = {
-      name      = "smart-home-monolith"
+      name      = "smart-home"
       namespace = "default"
     }
     spec = {
@@ -98,6 +98,11 @@ resource "kubernetes_manifest" "smart-home-monolith" {
       http = [
         {
           match = [
+            {
+              uri = {
+                prefix: "/api/heating"
+              }
+            },
             {
               uri = {
                 prefix: "/api/temperature"
@@ -114,27 +119,7 @@ resource "kubernetes_manifest" "smart-home-monolith" {
               }
             }
           ]
-        }
-      ]
-    }
-  }
-}
-resource "kubernetes_manifest" "smart-home-telemetry" {
-  manifest = {
-    apiVersion = "networking.istio.io/v1alpha3"
-    kind       = "VirtualService"
-    metadata = {
-      name      = "smart-home-telemetry"
-      namespace = "default"
-    }
-    spec = {
-      gateways = [
-        "default/istio-gateway-default",
-      ]
-      hosts = [
-        "*"
-      ]
-      http = [
+        },
         {
           match = [
             {
