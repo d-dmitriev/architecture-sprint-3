@@ -111,4 +111,5 @@ postgresql:
     database: smart_home_telemetry
   commonLabels:
       app: smart-home-telemetry-postgres
+      app.kubernetes.io/name: smart-home-telemetry-postgres
       version: 15.5.20
