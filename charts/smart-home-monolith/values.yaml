@@ -111,4 +111,5 @@ postgresql:
     database: smart_home
   commonLabels:
     app: smart-home-monolith-postgres
+    app.kubernetes.io/name: smart-home-monolith-postgres
     version: 15.5.20
