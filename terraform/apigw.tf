@@ -53,6 +53,33 @@ resource "kubernetes_manifest" "smart-home-monolith-lb" {
   }
 }
 
+resource "kubernetes_manifest" "smart-home-telemetry-lb" {
+  manifest = {
+    apiVersion = "networking.istio.io/v1"
+    kind       = "DestinationRule"
+    metadata = {
+      name      = "smart-home-telemetry"
+      namespace = "default"
+    }
+    spec = {
+      host = "smart-home-telemetry"
+      trafficPolicy = {
+        connectionPool = {
+          tcp = {
+            maxConnections: 2
+          }
+          http = {
+            maxRequestsPerConnection = 2
+          }
+        }
+        loadBalancer = {
+          simple = "LEAST_REQUEST"
+        }
+      }
+    }
+  }
+}
+
 resource "kubernetes_manifest" "smart-home-monolith" {
   manifest = {
     apiVersion = "networking.istio.io/v1alpha3"
@@ -66,7 +93,7 @@ resource "kubernetes_manifest" "smart-home-monolith" {
         "default/istio-gateway-default",
       ]
       hosts = [
-        "*",
+        "*"
       ]
       http = [
         {
@@ -87,7 +114,27 @@ resource "kubernetes_manifest" "smart-home-monolith" {
               }
             }
           ]
-        },
+        }
+      ]
+    }
+  }
+}
+resource "kubernetes_manifest" "smart-home-telemetry" {
+  manifest = {
+    apiVersion = "networking.istio.io/v1alpha3"
+    kind       = "VirtualService"
+    metadata = {
+      name      = "smart-home-telemetry"
+      namespace = "default"
+    }
+    spec = {
+      gateways = [
+        "default/istio-gateway-default",
+      ]
+      hosts = [
+        "*"
+      ]
+      http = [
         {
           match = [
             {
@@ -131,12 +178,12 @@ resource "kubernetes_manifest" "request_authentication" {
     kind       = "RequestAuthentication"
     metadata = {
       name      = "default-jwt-api"
-      namespace = "default"
+      namespace = "istio-system"
     }
     spec = {
       selector = {
         matchLabels = {
-          "app.kubernetes.io/name" = "smart-home-monolith"
+          app = "istio-ingressgateway"
         }
       }
       jwtRules = [
@@ -158,12 +205,12 @@ resource "kubernetes_manifest" "require_jwt" {
     kind       = "AuthorizationPolicy"
     metadata = {
       name      = "require-jwt"
-      namespace = "default"
+      namespace = "istio-system"
     }
     spec = {
       selector = {
         matchLabels = {
-          "app.kubernetes.io/name" = "smart-home-monolith"
+          app = "istio-ingressgateway"
         }
       }
       action = "ALLOW"

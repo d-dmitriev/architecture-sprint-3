@@ -110,5 +110,5 @@ postgresql:
     password: your_password
     database: smart_home_telemetry
   commonLabels:
-      app: smart-home-monolith-postgres
+      app: smart-home-telemetry-postgres
       version: 15.5.20
