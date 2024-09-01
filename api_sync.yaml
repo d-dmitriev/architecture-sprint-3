@@ -448,6 +448,85 @@ paths:
                       type: string
                       format: local-date-time
                       example: "2024-08-20T22:55:04.425"
+  /devices/{id}:
+    get:
+      summary: Получение информации об устройстве.
+      description: Возвращает подробную информацию о конкретном устройстве по его ID.
+      parameters:
+        - in: path
+          name: id
+          description: Идентификатор устройства
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        "200":
+          description: Список с данными телеметрии
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    deviceId:
+                      type: string
+                      format: uuid
+                    name:
+                      type: string
+                      description: Имя устройсива
+                      example: Lamp 1
+                    status:
+                      type: string
+                      example: On
+  /devices/{id}/status:
+    put:
+      summary: Обновление состояния устройства.
+      description: Позволяет изменить состояние устройства (например, включить/выключить).
+      parameters:
+        - in: path
+          name: id
+          description: Идентификатор устройства
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        - in: query
+          name: status
+          description: Статус
+          required: true
+          schema:
+            type: string
+            example: ON
+      responses:
+        "204":
+          description: Список с данными телеметрии
+  /devices/{id}/commands:
+    post:
+      summary: Отправка команды устройству.
+      description: Отправляет команду устройству (например, «установить температуру 22 градуса»).
+      parameters:
+        - in: path
+          name: id
+          description: Идентификатор устройства
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        - in: query
+          name: commands
+          description: Команда
+          required: true
+          schema:
+            type: string
+            example: ON
+      responses:
+        "204":
+          description: Список с данными телеметрии
+  
 components:
   schemas:
     error_type:
