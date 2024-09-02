@@ -151,7 +151,7 @@ resource "kubernetes_manifest" "smart-home" {
           match = [
             {
               uri = {
-                prefix: "/api/devices/.*/telemetry"
+                regex: "/api/devices/*/telemetry"
               }
             }
           ]
@@ -169,18 +169,35 @@ resource "kubernetes_manifest" "smart-home" {
         {
           match = [
             {
+              method = {
+                exact: "POST"
+              }
               uri = {
-                prefix: "/api/devices/.*"
+                prefix: "/api/devices"
               }
             },
             {
+               method = {
+                exact: "GET"
+              }
               uri = {
-                prefix: "/api/devices/.*/status"
+                regex: "/api/devices/*"
               }
             },
             {
+              method = {
+                exact: "PUT"
+              }
               uri = {
-                prefix: "/api/devices/.*/commands"
+                regex: "/api/devices/*/status"
+              }
+            },
+            {
+              method = {
+                exact: "POST"
+              }
+              uri = {
+                regex: "/api/devices/*/commands"
               }
             }
           ]
