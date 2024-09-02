@@ -22,6 +22,19 @@ channels:
             lastUpdated:
               type: string
               format: date-time
+  devices:
+    messages:
+      command:
+        payload:
+          type: object
+          properties:
+            deviceId:
+              type: string
+              format: uuid
+            type:
+              type: string
+            value:
+              type: string
   registerDevice:
     address: "smarthome.1.0.event.register"
     description: Канал для сообщений о регистрации устройства
@@ -55,15 +68,27 @@ channels:
 operations:
   sendTelemetry:
     action: send
+    description: Отправка данных телеметрии из монолита
     channel:
       $ref: "#/channels/telemetry"
   receiveTelemetry:
     action: receive
+    description: Получение данных телеметрии в сервисе телеметрии
+    channel:
+      $ref: "#/channels/telemetry"
+  sendDeviceCommand:
+    action: send
+    description: Отправка команды из сервиса управления устройствами
+    channel:
+      $ref: "#/channels/devices"
+  receiveDeviceCommand:
+    action: receive
+    description: Получение команды в монолите
     channel:
       $ref: "#/channels/telemetry"
   sendRegisterDevice:
     action: send
-    description: Операция по отправке сообщений о регистрации цстройства
+    description: Операция по отправке сообщений о регистрации устройства
     channel:
       $ref: "#/channels/registerDevice"
   receiveRegisterDevice:

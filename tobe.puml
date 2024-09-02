@@ -4,10 +4,8 @@
 title [C4 System Context diagram] Система Умный Дом
 
 Person(user, "Пользователь", "Пользователь Системы Умный Дом")
-'Person(admin, "Администратор", "Администратор Системы Умный Дом")
 System(system_cont, "Система Умный Дом", "Позволяет регистрировать устройства сторонних производителей и управлять ими")
 Rel(user, system_cont, "Добавляет устройства и управляет ими")
-'Rel(admin, system_cont, "Просматривает отчеты о регистрации пользователей")
 System_Ext(system_ext, "Сервисы производителей устройств", "Сервисы производителей устройств умного дома для взаимодействия с приложениями пользователей")
 Rel_R(system_cont, system_ext, "Взаимодействие с сервисом производителя для управления устройствами")
 
@@ -90,13 +88,11 @@ title [C4 Component diagram] Система Умный Дом - Приложен
 
 Container_Boundary(web_app, "Web Application") {
     Component(user_ui, "Интерфейс пользователя", "разрабатывается на аутсорcе")
-'    Component(admin_ui, "Интерфейс администратора")
 }
 Container_Boundary(alias3, "API Gateway") {
     Component(api_gateway, "Istoi")
 }
 Rel(user_ui, api_gateway, "Команды управления")
-'Rel(admin_ui, api_gateway, "Просмотр статистики")
 
 Container(users, "Сервис регистрации пользователей") {
     Component(users_api, "API", "получение данных телеметрии от устройств")
@@ -271,82 +267,84 @@ entity heating_systems {
 @enduml
 
 @startuml
-title [Entity relation diagram] Сервис регистрации пользователей
-entity User {
-    *id: uuid
-    --
-    *email: test
-    name: test
-    firstName: test
-    lastName: test
-    password: text<<hash>>
+title [Entity relation diagram]
+package "Сервис регистрации пользователей" {
+    entity User {
+        *id: uuid
+        --
+        *email: test
+        name: test
+        firstName: test
+        lastName: test
+        password: text<<hash>>
+    }
 }
-@enduml
+package "Сервис регистрации устройств" {
+    entity Provider {
+        *id: number
+        --
+        name: string
+        authUrl: string
+    }
+    entity User_Provider {
+        *id: uuid
+        --
+        *user: uuid<<external key>>
+        *provider: number<<FK>>
+        authCode: text
+    }
+    entity User_Device {
+        *id: number
+        --
+        name: text
+        *extId: uuid
+        *userProvider: uuid<<FK>>
+    }
+    User_Provider }|--|| Provider
+    User_Device }|--|| User_Provider
+}
 
-@startuml
-title [Entity relation diagram] Сервис регистрации устройств
-entity Provider {
-    *id: number
-    --
-    name: string
-    authUrl: string
+package "Сервис телеметрии" {
+    entity Telemetry {
+        *id: uuid
+        --
+        *device_id: uuid<<external key>>
+        current_value_double: double
+        current_value_integer: integer
+        current_value_string: text
+        *last_updated: timestamp
+    }
 }
-entity User_Provider {
-    *id: number
-    --
-    *user: uuid<<external key>>
-    *provider: number<<FK>>
-    authCode: text
-}
-entity User_Device {
-    *id: number
-    --
-    name: text
-    *extId: uuid
-    *userProvider: uuid
-}
-User_Provider }|--|| Provider
-User_Device }|--|| User_Provider
-@enduml
 
-@startuml
-title [Entity relation diagram] Сервис телеметрии
-entity Telemetry {
-    *id: number
-    --
-    *userDevice: uuid<<external key>>
-    *data: json
-    lastUpdated: timestamp
+package "Сервис управления устройствами" {
+    entity Devices {
+        *device_id: uuid<<external key>>
+        --
+        *name: string
+        *status: string
+        *user_id: uuid<<external key>>
+    }
 }
-@enduml
 
-@startuml
-title [Entity relation diagram] Сервис управления устройствами
-entity Commands {
-    *id: number
-    --
-    *userDevice: uuid<<external key>>
-    *command: json
-    lastUpdated: timestamp
+package "Сервис управления сценариями" {
+    entity Scene {
+        *id: number
+        --
+        name: text
+        startTime: time
+        endTime: time
+        enabled: boolean
+        *user: uuid<<external key>>
+    }
+    entity Scene_Device {
+        *id: number
+        --
+        *sceneId: number
+        *userDevice: uuid<<external key>>
+    }
+    Scene }|--|{ Scene_Device
 }
-@enduml
 
-@startuml
-title [Entity relation diagram] Сервис управления сценариями
-entity Scene {
-    *id: number
-    --
-    name: text
-    startTime: time
-    endTime: time
-    enabled: boolean
-    *user: uuid<<external key>>
-}
-entity Scene_Device {
-    *id: number
-    --
-    *sceneId: number
-    *userDevice: uuid<<external key>>
-}
-Scene }|--|{ Scene_Device
+Telemetry }|--|| Devices
+User_Provider }|--|| User
 @enduml
