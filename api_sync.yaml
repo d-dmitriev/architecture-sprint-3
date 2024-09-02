@@ -554,6 +554,51 @@ paths:
                 status: 400
                 error: "Bad Request"
                 path: "/api/devices/c890c20b-e90e-47dd-ac9a-41d7af28226b/commands"
+  /providers/{user_id}:
+    get:
+      summary: Получение провайдеров пользователя.
+      description: Возвращает зарегистрированных провайдеров устройств пользователя.
+      parameters:
+        - in: path
+          name: user_id
+          description: Идентификатор пользователя
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        "200":
+          description: Список провайдеров
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                      description: ID провайдера
+                    provider:
+                      type: object
+                      description: Описание провайдера
+                      properties: 
+                        name:
+                          type: string
+                          description: Имя провайдера
+                        devices:
+                          type: array
+                          description: Список устройств
+                          items:
+                            properties:
+                              extId:
+                                type: string
+                                format: uuid
+                                description: Внешний ID устройства
+                              name: 
+                                type: string
+                                description: Имя устройства
 components:
   schemas:
     error_type:
