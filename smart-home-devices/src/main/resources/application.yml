@@ -47,7 +47,7 @@ otel:
     - tracecontext
     - b3
   sdk:
-    disabled: true
+    disabled: false
   service:
     name: smart-home-devices.spring
   exporter:
