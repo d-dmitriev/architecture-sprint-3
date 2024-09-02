@@ -26,7 +26,7 @@ spring:
       properties:
         spring.json.trusted.packages: "*"
     consumer:
-      group-id: ${KAFKA_GROUP:smart-home-telemetry}
+      group-id: ${KAFKA_GROUP:smart-home-devices}
       client-id: ${KAFKA_CLIENT:client-1}
       bootstrap-servers: ${KAFKA_HOST:localhost}:9092
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -49,7 +49,7 @@ otel:
   sdk:
     disabled: true
   service:
-    name: smart-home-telemetry.spring
+    name: smart-home-devices.spring
   exporter:
     otlp:
       protocol: grpc
