@@ -80,6 +80,33 @@ resource "kubernetes_manifest" "smart-home-telemetry-lb" {
   }
 }
 
+resource "kubernetes_manifest" "smart-home-devices-lb" {
+  manifest = {
+    apiVersion = "networking.istio.io/v1"
+    kind       = "DestinationRule"
+    metadata = {
+      name      = "smart-home-devices"
+      namespace = "default"
+    }
+    spec = {
+      host = "smart-home-devices"
+      trafficPolicy = {
+        connectionPool = {
+          tcp = {
+            maxConnections: 2
+          }
+          http = {
+            maxRequestsPerConnection = 2
+          }
+        }
+        loadBalancer = {
+          simple = "LEAST_REQUEST"
+        }
+      }
+    }
+  }
+}
+
 resource "kubernetes_manifest" "smart-home" {
   manifest = {
     apiVersion = "networking.istio.io/v1alpha3"
@@ -124,7 +151,7 @@ resource "kubernetes_manifest" "smart-home" {
           match = [
             {
               uri = {
-                prefix: "/api/devices"
+                prefix: "/api/devices/.*/telemetry"
               }
             }
           ]
@@ -132,6 +159,35 @@ resource "kubernetes_manifest" "smart-home" {
             {
               destination = {
                 host = "smart-home-telemetry"
+                port = {
+                  number = 8080
+                }
+              }
+            }
+          ]
+        },
+        {
+          match = [
+            {
+              uri = {
+                prefix: "/api/devices/.*"
+              }
+            },
+            {
+              uri = {
+                prefix: "/api/devices/.*/status"
+              }
+            },
+            {
+              uri = {
+                prefix: "/api/devices/.*/commands"
+              }
+            }
+          ]
+          route = [
+            {
+              destination = {
+                host = "smart-home-devices"
                 port = {
                   number = 8080
                 }
