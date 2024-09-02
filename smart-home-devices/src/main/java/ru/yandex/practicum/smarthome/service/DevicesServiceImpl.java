@@ -2,7 +2,10 @@ package ru.yandex.practicum.smarthome.service;
 
 import jakarta.persistence.RollbackException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.smarthome.dto.CommandDto;
 import ru.yandex.practicum.smarthome.dto.DeviceDto;
 import ru.yandex.practicum.smarthome.entity.Device;
 import ru.yandex.practicum.smarthome.repository.DevicesRepository;
@@ -13,6 +16,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class DevicesServiceImpl implements DevicesService {
     private final DevicesRepository devicesRepository;
+    @Autowired
+    private KafkaTemplate<String, CommandDto> kafkaTemplate;
 
     @Override
     public DeviceDto register(DeviceDto device) {
@@ -36,13 +41,15 @@ public class DevicesServiceImpl implements DevicesService {
     }
 
     @Override
-    public void sendDeviceCommand(UUID deviceId, String command) {
+    public void sendDeviceCommand(UUID deviceId, CommandDto command) {
         Device device = devicesRepository.findById(deviceId)
                 .orElseThrow(() -> new RollbackException("Device not found"));
-        switch (command) {
+        switch (command.getType()) {
             case "ON" -> device.setStatus("ON");
             case "OFF" -> device.setStatus("OFF");
         }
+        command.setDeviceId(deviceId);
+        kafkaTemplate.send("devices", command);
         devicesRepository.save(device);
     }
 

@@ -502,7 +502,18 @@ paths:
             example: ON
       responses:
         "204":
-          description: Список с данными телеметрии
+          description: Статус обновлен
+        "400":
+          description: Не верный запрос
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_type"
+              example:
+                timestamp: "2024-08-18T20:58:05.337+00:00"
+                status: 400
+                error: "Bad Request"
+                path: "/api/devices/c890c20b-e90e-47dd-ac9a-41d7af28226b/status"
   /devices/{id}/commands:
     post:
       summary: Отправка команды устройству.
@@ -516,17 +527,33 @@ paths:
             type: string
             format: uuid
             example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-        - in: query
-          name: commands
-          description: Команда
-          required: true
-          schema:
-            type: string
-            example: ON
       responses:
         "204":
-          description: Список с данными телеметрии
-  
+          description: Команда отправлена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: Тип команды
+                    example: "temp"
+                  value:
+                    type: string
+                    description: Значение
+                    example: "22"
+        "400":
+          description: Не верный запрос
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_type"
+              example:
+                timestamp: "2024-08-18T20:58:05.337+00:00"
+                status: 400
+                error: "Bad Request"
+                path: "/api/devices/c890c20b-e90e-47dd-ac9a-41d7af28226b/commands"
 components:
   schemas:
     error_type:

@@ -1,11 +1,13 @@
 package ru.yandex.practicum.smarthome.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.smarthome.dto.CommandDto;
 import ru.yandex.practicum.smarthome.dto.DeviceDto;
 import ru.yandex.practicum.smarthome.service.DevicesService;
 // import ru.yandex.practicum.smarthome.service.TelemetryService;
@@ -34,12 +36,14 @@ public class DevicesController {
     @PutMapping("/{device_id}/status")
     public ResponseEntity<DeviceDto> updateDeviceStatus(@PathVariable("device_id") UUID deviceId, @RequestHeader HttpHeaders requestHeaders, @RequestParam String status) {
         logger.info("Updating status for device with id {}", deviceId);
+        devicesService.updateDeviceStatus(deviceId, status);
         return ResponseEntity.noContent().headers(requestHeaders).build();
     }
 
     @PostMapping("/{device_id}/commands")
-    public ResponseEntity<DeviceDto> sendDeviceCommand(@PathVariable("device_id") UUID deviceId, @RequestHeader HttpHeaders requestHeaders, @RequestParam String command) {
+    public ResponseEntity<DeviceDto> sendDeviceCommand(@PathVariable("device_id") UUID deviceId, @RequestHeader HttpHeaders requestHeaders, @Valid @RequestBody CommandDto command) {
         logger.info("Sending command for device with id {}", deviceId);
+        devicesService.sendDeviceCommand(deviceId, command);
         return ResponseEntity.noContent().headers(requestHeaders).build();
     }
 }
