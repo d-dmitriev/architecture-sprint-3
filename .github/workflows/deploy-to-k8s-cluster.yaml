@@ -22,6 +22,7 @@ jobs:
       - uses: azure/setup-kubectl@v4
       - uses: Azure/k8s-deploy@v5
         with:
+          annotate-namespace: false
           manifests: |
             contexts
       
