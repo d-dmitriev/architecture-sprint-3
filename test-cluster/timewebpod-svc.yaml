@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: timewebpod-ext-serv
+spec:
+  type: LoadBalancer
+  selector:
+    app: timewebpod
+  ports:
+    - name: timewebpod-admin
+      protocol: TCP
+      port: 14953
+      targetPort: 14953

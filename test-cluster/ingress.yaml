@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo-w3h
+spec:
+  tls:
+    - hosts:
+        - k8s.w3h.ru
+      secretName: w3h.ru
+  ingressClassName: nginx
+  rules:
+  - host: k8s.w3h.ru
+    http:
+      paths:
+        - pathType: Prefix
+          path: /
+          backend:
+            service:
+              name: demo
+              port:
+                number: 80
+        - pathType: Prefix
+          path: /apple
+          backend:
+            service:
+              name: apple-service
+              port:
+                number: 5678
+        - pathType: Prefix
+          path: /banana
+          backend:
+            service:
+              name: banana-service
+              port:
+                number: 5678

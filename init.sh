@@ -1,6 +1,6 @@
 #!/bin/bash
 
-minikube start --cpus='6'
+minikube start --cpus='6' --nodes='3'
 
 istioctl install -f ./tracing.yaml -y
 

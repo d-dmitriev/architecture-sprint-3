@@ -1,0 +1,10 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: timewebpod
+  labels:
+    app: timewebpod
+spec:
+  containers:
+    - name: timewebpod
+      image: timewebpod:latest
