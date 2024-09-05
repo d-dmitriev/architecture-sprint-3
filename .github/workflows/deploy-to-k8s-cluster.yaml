@@ -1,4 +1,4 @@
-name: test
+name: deploy-to-k8s-cluster
 
 on:
   push:

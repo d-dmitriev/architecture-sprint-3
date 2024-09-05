@@ -4,7 +4,7 @@ metadata:
   name: apple-app
   labels:
     app: apple
-    version: 1.0.3
+    version: 1.0.4
 spec:
   containers:
     - name: apple-app
