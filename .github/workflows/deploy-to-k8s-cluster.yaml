@@ -23,6 +23,7 @@ jobs:
       - uses: Azure/k8s-deploy@v5
         with:
           annotate-namespace: false
+          annotate-resources: false
           manifests: |
             contexts
       
