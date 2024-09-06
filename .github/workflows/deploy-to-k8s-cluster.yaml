@@ -25,5 +25,5 @@ jobs:
           annotate-namespace: false
           annotate-resources: false
           manifests: |
-            contexts
+            contexts/apple-app.yaml
       
