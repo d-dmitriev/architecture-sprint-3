@@ -112,4 +112,4 @@ spec:
               number: 8080
 EOF
 
-kubectl get nodes,ingress
+kubectl get no,ing,po,svc
