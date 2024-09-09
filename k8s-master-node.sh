@@ -41,20 +41,20 @@ mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 echo "Enable shedule..."
-kubectl patch node ubuntu-master -p "{\"spec\":{\"unschedulable\":false}}"
-kubectl taint nodes ubuntu-master node-role.kubernetes.io/control-plane=true:NoSchedule-
+kubectl patch node ubuntu-master -p "{\"spec\":{\"unschedulable\":false}}" > /dev/null
+kubectl taint nodes ubuntu-master node-role.kubernetes.io/control-plane=true:NoSchedule-  > /dev/null
 echo "Install flannel..."
-wget --no-verbose https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+wget -q https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 sed -i 's/vxlan/host-gw/' kube-flannel.yml
 sed -i 's#10.244.0.0/16#10.1.0.0/16#' kube-flannel.yml
 kubectl create -f kube-flannel.yml > /dev/null
 echo "Wait nodes..."
-kubectl wait --for=condition=Ready nodes --all --timeout=600s
+kubectl wait --for=condition=Ready nodes --all --timeout=600s > /dev/null
 echo "Install ingress nginx..."
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/baremetal/deploy.yaml --wait > /dev/null
 kubectl patch svc ingress-nginx-controller  -n ingress-nginx -p '{"spec": {"type": "LoadBalancer", "externalIPs":["192.168.1.169"]}}'
 echo "Wait ingress nginx..."
-kubectl wait --for=condition=Ready pods -l app.kubernetes.io/component=controller -n ingress-nginx --timeout=600s
+kubectl wait --for=condition=Ready pods -l app.kubernetes.io/component=controller -n ingress-nginx --timeout=600s > /dev/null
 echo "Install demo app..."
 cat <<EOF | kubectl apply --wait -f - > /dev/null
 kind: Deployment
