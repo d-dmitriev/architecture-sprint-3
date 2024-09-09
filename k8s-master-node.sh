@@ -52,7 +52,7 @@ echo "Wait nodes..."
 kubectl wait --for=condition=Ready nodes --all --timeout=600s > /dev/null
 echo "Install ingress nginx..."
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/baremetal/deploy.yaml --wait > /dev/null
-kubectl patch svc ingress-nginx-controller  -n ingress-nginx -p '{"spec": {"type": "LoadBalancer", "externalIPs":["192.168.1.169"]}}'
+kubectl patch svc ingress-nginx-controller  -n ingress-nginx -p '{"spec": {"type": "LoadBalancer", "externalIPs":["192.168.1.169"]}}' > /dev/null
 echo "Wait ingress nginx..."
 kubectl wait --for=condition=Ready pods -l app.kubernetes.io/component=controller -n ingress-nginx --timeout=600s > /dev/null
 echo "Install demo app..."
@@ -112,4 +112,4 @@ spec:
               number: 8080
 EOF
 
-kubectl get nodes
+kubectl get nodes,ingress
