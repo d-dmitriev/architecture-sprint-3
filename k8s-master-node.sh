@@ -34,7 +34,7 @@ sudo DEBIAN_FRONTEND=noninteractive DEBCONF_NOWARNINGS=yes apt-get install -y -q
 sudo apt-mark hold kubelet kubeadm kubectl > /dev/null
 sudo systemctl enable --now kubelet
 echo "Init kubernetes..."
-sudo kubeadm config images pull > /dev/null
+sudo kubeadm config images pull
 sudo kubeadm init --pod-network-cidr=10.1.0.0/16 --service-cidr=10.2.0.0/16 --upload-certs > /dev/null
 echo "Prepare kubectl..."
 mkdir -p $HOME/.kube
