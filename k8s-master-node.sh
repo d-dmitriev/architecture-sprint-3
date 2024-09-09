@@ -4,12 +4,12 @@ sudo hostname ubuntu-master
 echo "Install dependencies"
 sudo swapoff -a
 sudo apt-get update > /dev/null
-sudo apt-get install -y -qq apt-transport-https ca-certificates curl gpg
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq apt-transport-https ca-certificates curl gpg > /dev/null
 echo "Install containerd"
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt-get update > /dev/null
-sudo apt-get install -qq containerd.io
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq containerd.io > /dev/null
 echo "Configure containerd"
 sudo containerd config default | sudo tee /etc/containerd/config.toml > /dev/null
 sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
@@ -30,7 +30,7 @@ echo "Install kubernetes"
 curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list > /dev/null
 sudo apt-get update > /dev/null
-sudo apt-get install -y -qq kubelet kubeadm kubectl > /dev/null
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq kubelet kubeadm kubectl > /dev/null
 sudo apt-mark hold kubelet kubeadm kubectl > /dev/null
 sudo systemctl enable --now kubelet
 echo "Init kubernetes"
