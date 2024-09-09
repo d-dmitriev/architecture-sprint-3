@@ -1,3 +1,5 @@
+#!/bin/bash
+
 sudo hostname ubuntu-master
 
 sudo swapoff -a
