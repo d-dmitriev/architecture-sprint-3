@@ -1,16 +1,16 @@
 #!/bin/bash
 
 sudo hostname ubuntu-master
-echo "Install dependencies"
+echo "Install dependencies..."
 sudo swapoff -a
 sudo apt-get update > /dev/null
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq apt-transport-https ca-certificates curl gpg > /dev/null
-echo "Install containerd"
+echo "Install containerd..."
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt-get update > /dev/null
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq containerd.io > /dev/null
-echo "Configure containerd"
+echo "Configure containerd..."
 sudo containerd config default | sudo tee /etc/containerd/config.toml > /dev/null
 sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
 sudo systemctl restart containerd
@@ -26,36 +26,36 @@ net.ipv4.ip_forward                 = 1
 net.bridge.bridge-nf-call-ip6tables = 1
 EOF
 sudo sysctl --system > /dev/null
-echo "Install kubernetes"
+echo "Install kubernetes..."
 curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list > /dev/null
 sudo apt-get update > /dev/null
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq kubelet kubeadm kubectl > /dev/null
 sudo apt-mark hold kubelet kubeadm kubectl > /dev/null
 sudo systemctl enable --now kubelet
-echo "Init kubernetes"
+echo "Init kubernetes..."
 sudo kubeadm config images pull > /dev/null
 sudo kubeadm init --pod-network-cidr=10.1.0.0/16 --service-cidr=10.2.0.0/16 --upload-certs > /dev/null
-echo "Prepare kubectl"
+echo "Prepare kubectl..."
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
-echo "Enable shedule"
+echo "Enable shedule..."
 kubectl patch node ubuntu-master -p "{\"spec\":{\"unschedulable\":false}}"
 kubectl taint nodes ubuntu-master node-role.kubernetes.io/control-plane=true:NoSchedule-
-echo "Install flannel"
+echo "Install flannel..."
 wget --no-verbose https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 sed -i 's/vxlan/host-gw/' kube-flannel.yml
 sed -i 's#10.244.0.0/16#10.1.0.0/16#' kube-flannel.yml
 kubectl create -f kube-flannel.yml > /dev/null
-echo "Wait nodes"
+echo "Wait nodes..."
 kubectl wait --for=condition=Ready nodes --all --timeout=600s
-echo "Install ingress nginx"
+echo "Install ingress nginx..."
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/baremetal/deploy.yaml --wait > /dev/null
 kubectl patch svc ingress-nginx-controller  -n ingress-nginx -p '{"spec": {"type": "LoadBalancer", "externalIPs":["192.168.1.169"]}}'
-echo "Wait ingress nginx"
+echo "Wait ingress nginx..."
 kubectl wait --for=condition=Ready pods -l app.kubernetes.io/component=controller -n ingress-nginx --timeout=600s
-echo "Install demo add"
+echo "Install demo app..."
 cat <<EOF | kubectl apply --wait -f - > /dev/null
 kind: Deployment
 apiVersion: apps/v1
