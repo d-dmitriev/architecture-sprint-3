@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo hostname ubuntu-worker
+sudo hostname worker-$(hostname -I)
 
 echo "[apt/install] Install dependencies..."
 sudo swapoff -a
