@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ -z "$DEPLOY_ENV" ]]; then
+if [[ -z "$K8S_EXT_IPS" ]]; then
   echo "K8S_EXT_IPS not set"
   exit 
 fi
