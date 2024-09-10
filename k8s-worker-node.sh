@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ -z "$K8S_EXT_IPS" ]]; then
+  echo "K8S_EXT_IPS not set"
+  exit 
+fi
+
 sudo hostname ubuntu-worker
 
 echo "[apt/install] Install dependencies..."
@@ -38,5 +43,5 @@ sudo DEBIAN_FRONTEND=noninteractive DEBCONF_NOWARNINGS=yes apt-get install -y -q
 sudo apt-mark hold kubelet kubeadm > /dev/null
 
 echo "[kubeadm/join] Join to kubernetes cluster..."
-sudo kubeadm join $K8S_MASTER --token $K8S_TOKEN \
-	--discovery-token-ca-cert-hash sha256:$K8S_TOKEN_CA_CERT_HASH
+# sudo kubeadm join $K8S_MASTER --token $K8S_TOKEN \
+# 	--discovery-token-ca-cert-hash sha256:$K8S_TOKEN_CA_CERT_HASH
