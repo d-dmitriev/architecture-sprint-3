@@ -39,4 +39,4 @@ sudo apt-mark hold kubelet kubeadm > /dev/null
 
 echo "[kubeadm/join] Join to kubernetes cluster..."
 sudo kubeadm join $K8S_MASTER --token $K8S_TOKEN \
-	--discovery-token-ca-cert-hash $K8S_TOKEN_CA_CERT_HASH
+	--discovery-token-ca-cert-hash sha256:$K8S_TOKEN_CA_CERT_HASH
