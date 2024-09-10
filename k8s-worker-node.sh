@@ -1,10 +1,5 @@
 #!/bin/bash
 
-if [[ -z "$K8S_EXT_IPS" ]]; then
-  echo "K8S_EXT_IPS not set"
-  exit 
-fi
-
 sudo hostname ubuntu-worker
 
 echo "[apt/install] Install dependencies..."
