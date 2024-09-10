@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ -z "$DEPLOY_ENV" ]]; then
+  echo "K8S_EXT_IPS not set"
+  exit 
+fi
+
 sudo hostname ubuntu-master
 
 echo "[apt/install] Install dependencies..."
