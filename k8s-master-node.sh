@@ -125,3 +125,6 @@ spec:
 EOF
 
 kubectl get no,ing,po,svc
+
+echo "[token/create] Join command:"
+kubeadm token create --print-join-command
