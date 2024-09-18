@@ -1,0 +1,22 @@
+listeners:
+  client:
+    protocol: PLAINTEXT
+
+provisioning:
+  enabled: false
+  waitForKafka: false
+  useHelmHooks: false
+  numPartitions: 1
+  replicationFactor: 1
+  topics:
+    - name: telemetry
+      partitions: 3
+      replicationFactor: 1
+
+metrics:
+  jmx:
+    enabled: true
+
+commonLabels:
+  app: kafka
+  version: 3.8.0

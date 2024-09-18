@@ -37,6 +37,12 @@ public class HeatingSystemController {
         return ResponseEntity.ok(heatingSystemService.updateHeatingSystem(id, heatingSystemDto));
     }
 
+    @PostMapping
+    public ResponseEntity<HeatingSystemDto> initHeatingSystem(@RequestBody HeatingSystemDto heatingSystemDto) {
+        logger.info("Init heating system with id {}", heatingSystemDto.getId());
+        return ResponseEntity.ok(heatingSystemService.initHeatingSystem(heatingSystemDto));
+    }
+
     @PostMapping("/{id}/turn-on")
     public ResponseEntity<Void> turnOn(@PathVariable("id") Long id) {
         logger.info("Turning on heating system with id {}", id);

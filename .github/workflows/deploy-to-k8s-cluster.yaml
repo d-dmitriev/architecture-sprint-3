@@ -1,0 +1,29 @@
+name: deploy-to-k8s-cluster
+
+on:
+  push:
+    paths:
+     - contexts/**
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: azure/k8s-set-context@v4
+        with:
+          method: kubeconfig
+          kubeconfig: '${{ secrets.KUBE_CONFIG }}'
+        id: setcontext
+      - uses: azure/setup-kubectl@v4
+      - uses: Azure/k8s-deploy@v5
+        with:
+          annotate-namespace: false
+          annotate-resources: false
+          manifests: |
+            contexts/apple-app.yaml
+      

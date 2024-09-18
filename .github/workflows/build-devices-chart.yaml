@@ -1,0 +1,45 @@
+name: build-devices-chart
+
+on:
+  push:
+    paths:
+     - charts/smart-home-devices/**
+
+env:
+  CHART_NAME: smart-home-devices
+  IMAGE_TAG: 0.1.${{ github.run_number }}
+jobs:
+  job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Helm
+        uses: azure/setup-helm@v4.2.0
+        with:
+          version: v3.14.4
+      - name: helm lint
+        run: |
+          helm lint ./charts/$CHART_NAME
+      - name: helm login
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | helm registry login ghcr.io -u $ --password-stdin
+      - name: helm dependency update
+        run: |
+          helm dependency update ./charts/$CHART_NAME
+      - name: helm package
+        run: |
+          helm package ./charts/$CHART_NAME --version $IMAGE_TAG
+      - name: Update verison
+        run: |
+           find ./charts/smart-home-devices -type f -name "Chart.yaml" -print0 | xargs -0 sed -i "s/version: 0.1.*/version: $IMAGE_TAG/g"
+      - name: helm push
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          helm push $CHART_NAME-$IMAGE_TAG.tgz oci://ghcr.io/${{ github.repository_owner }}/helm-charts
+      - name: Commit and push changes
+        uses: devops-infra/action-commit-push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          commit_prefix: "[skip ci]"
+          commit_message: Update chart version to 0.1.${{ github.run_number }}
+          force: false

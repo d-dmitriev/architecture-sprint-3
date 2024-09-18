@@ -1,0 +1,641 @@
+openapi: 3.0.0
+info:
+  title: simple-api
+  version: 0.1.0
+x-kusk:
+  rate_limit:
+    requests_per_unit: 20
+    unit: minute
+  path:
+    prefix: /api
+  upstream:
+    service:
+      name: smart-home-monolith
+      namespace: default
+      port: 8080
+paths:
+  /heating:
+    post:
+      summary: Создание системы.
+      requestBody:
+        description: JSON с описанием системы
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  example: 0
+                targetTemperature:
+                  type: number
+                  example: 0
+      responses:
+        "200":
+          description: Ответ с информацией о созданной системе
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/system_type"
+        "400":
+          description: Ошибка при создании системы
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_type"
+              example:
+                timestamp: "2024-08-18T20:58:05.337+00:00"
+                status: 400
+                error: "Bad Request"
+                path: "/api/heating"
+  /heating/{id}:
+    get:
+      summary: Получение системы по идентификатору.
+      operationId: getUser
+      parameters:
+        - in: path
+          name: id
+          description: Идентификатор системы
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Информация о системе
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/system_type"
+        "500":
+          description: Ошибка получения информации о системе
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_type"
+    put:
+      summary: Обновление системы по идентификатору.
+      parameters:
+        - in: path
+          name: id
+          description: Идентификатор системы
+          required: true
+          schema:
+            type: integer
+          example: 0
+      requestBody:
+        description: Информация для обновленния системы
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              targetTemperature: 18.2
+              on: false
+      responses:
+        "200":
+          description: Информация об обновленной системе
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/system_type"
+        "400":
+          description: Ошибка обновления системы
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_type"
+              example:
+                timestamp: "2024-08-18T20:58:05.337+00:00"
+                status: 400
+                error: "Bad Request"
+                path: "/api/heating/2"
+        "500":
+          description: Ошибка обновления системы
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_type"
+              example:
+                timestamp: "2024-08-18T20:58:05.337+00:00"
+                status: 500
+                error: "Internal Server Error"
+                path: "/api/heating/22"
+  /heating/{id}/turn-on:
+    post:
+      summary: Включение системы.
+      parameters:
+        - in: path
+          name: id
+          description: Идентификатор системы
+          required: true
+          schema:
+            type: integer
+          example: 0
+      responses:
+        "204":
+          description: Система включена
+        "500":
+          description: Ошибка включения системы
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_type"
+              example:
+                timestamp: "2024-08-18T20:58:05.337+00:00"
+                status: 500
+                error: "Internal Server Error"
+                path: "/api/heating/100/turn-on"
+  /heating/{id}/turn-off:
+    post:
+      summary: Выключение системы.
+      parameters:
+        - in: path
+          name: id
+          description: Идентификатор системы
+          required: true
+          schema:
+            type: integer
+          example: 0
+      responses:
+        "204":
+          description: Система выключена
+        "500":
+          description: Ошибка выключения системы
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_type"
+              example:
+                timestamp: "2024-08-18T20:58:05.337+00:00"
+                status: 500
+                error: "Internal Server Error"
+                path: "/api/heating/100/turn-off"
+  /heating/{id}/set-temperature:
+    post:
+      summary: Установка температуры системы.
+      parameters:
+        - in: path
+          name: id
+          description: Идентификатор системы
+          required: true
+          schema:
+            type: integer
+          example: 0
+        - in: query
+          name: temperature
+          description: Температура
+          required: true
+          schema:
+            type: number
+          example: 18.2
+      responses:
+        "204":
+          description: Температура обновлена
+        "400":
+          description: Не верный формат температуры
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_type"
+              example:
+                timestamp: "2024-08-18T20:58:05.337+00:00"
+                status: 400
+                error: "Bad Request"
+                path: "/api/heating/3/set-temperature"
+        "500":
+          description: Ошибка обновления температуры
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_type"
+              example:
+                timestamp: "2024-08-18T20:58:05.337+00:00"
+                status: 500
+                error: "Internal Server Error"
+                path: "/api/heating/3/set-temperature"
+  /heating/{id}/current-temperature:
+    get:
+      summary: Получение температуры системы.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Температура
+          content:
+            application/json:
+              schema:
+                type: integer
+                description: Текущая температура
+              example: 1
+        "500":
+          description: Ошибка получения температуры
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_type"
+              example:
+                timestamp: "2024-08-18T20:58:05.337+00:00"
+                status: 500
+                error: "Internal Server Error"
+                path: "/api/heating/12/current-temperature"
+  /temperature:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  example: 1
+                currentTemperature:
+                  type: number
+                  example: 20.1
+                lastUpdated:
+                  type: string
+                  format: local-date-time
+                  example: "2024-08-20T22:55:04.425"
+      responses:
+        "200":
+          description: Создать сенсор
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  id: 1
+                  currentTemperature: 0.0
+                  lastUpdated: "2024-08-20T22:55:04.425"
+        "400":
+          description: Не удалось создать сенсор
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_type"
+              example:
+                timestamp: "2024-08-18T20:58:05.337+00:00"
+                status: 400
+                error: "Bad Request"
+                path: "/api/temperature"
+        "500":
+          description: Не удалось создать сенсор
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_type"
+              example:
+                timestamp: "2024-08-18T20:58:05.337+00:00"
+                status: 500
+                error: "Internal Server Error"
+                path: "/api/temperature"
+  /temperature/{id}/current-temperature:
+    get:
+      summary: Получение текущей температуры сэнсора.
+      parameters:
+        - in: path
+          name: id
+          description: Идентификатор сенсора
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Текущая температура
+          content:
+            application/json:
+              schema:
+                type: number
+        "500":
+          description: Ошибка получения температуры
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_type"
+              example:
+                timestamp: "2024-08-18T20:58:05.337+00:00"
+                status: 500
+                error: "Internal Server Error"
+                path: "/api/temperature/2/current-temperature"
+  /temperature/{id}/set-temperature:
+    post:
+      summary: Установка температуры сенсора.
+      parameters:
+        - in: path
+          name: id
+          description: Идентификатор сенсора
+          required: true
+          schema:
+            type: integer
+          example: 0
+        - in: query
+          name: temperature
+          description: Температура
+          required: true
+          schema:
+            type: number
+          example: 18.2
+      responses:
+        "204":
+          description: Температура обновлена
+        "400":
+          description: Не верный формат температуры
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_type"
+              example:
+                timestamp: "2024-08-18T20:58:05.337+00:00"
+                status: 400
+                error: "Bad Request"
+                path: "/api/temperature/2/set-temperature"
+        "500":
+          description: Ошибка обновления температуры
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_type"
+              example:
+                timestamp: "2024-08-18T20:58:05.337+00:00"
+                status: 500
+                error: "Internal Server Error"
+                path: "/api/temperature/2/set-temperature"
+  /devices/{id}/telemetry/latest:
+    get:
+      summary: Получение последних данных телеметрии.
+      description: Возвращает последнее полученное значение телеметрии для устройства.
+      parameters:
+        - in: path
+          name: id
+          description: Идентификатор сенсора
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        "200":
+          description: Последние данные телеметрии
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  deviceId:
+                    type: string
+                    format: uuid
+                  currentTemperature:
+                    type: number
+                    description: Текущая температура
+                    example: 18.2
+                  lastUpdated:
+                    type: string
+                    format: local-date-time
+                    example: "2024-08-20T22:55:04.425"
+        "500":
+          description: Ошибка сервиса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_type"
+              example:
+                timestamp: "2024-08-18T20:58:05.337+00:00"
+                status: 500
+                error: "Internal Server Error"
+                path: "/api/devices/3fa85f64-5717-4562-b3fc-2c963f66afa6/telemetry/latest"
+  /devices/{id}/telemetry:
+    get:
+      summary: Получение исторических данных телеметрии.
+      description: Возвращает исторические данные телеметрии для устройства за определённый период времени.
+      parameters:
+        - in: path
+          name: id
+          description: Идентификатор устройства
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        "200":
+          description: Список с данными телеметрии
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    deviceId:
+                      type: string
+                      format: uuid
+                    currentTemperature:
+                      type: number
+                      description: Текущая температура
+                      example: 18.2
+                    lastUpdated:
+                      type: string
+                      format: local-date-time
+                      example: "2024-08-20T22:55:04.425"
+  /devices/{id}:
+    get:
+      summary: Получение информации об устройстве.
+      description: Возвращает подробную информацию о конкретном устройстве по его ID.
+      parameters:
+        - in: path
+          name: id
+          description: Идентификатор устройства
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        "200":
+          description: Список с данными телеметрии
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    deviceId:
+                      type: string
+                      format: uuid
+                    name:
+                      type: string
+                      description: Имя устройсива
+                      example: Lamp 1
+                    status:
+                      type: string
+                      example: On
+  /devices/{id}/status:
+    put:
+      summary: Обновление состояния устройства.
+      description: Позволяет изменить состояние устройства (например, включить/выключить).
+      parameters:
+        - in: path
+          name: id
+          description: Идентификатор устройства
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        - in: query
+          name: status
+          description: Статус
+          required: true
+          schema:
+            type: string
+            example: ON
+      responses:
+        "204":
+          description: Статус обновлен
+        "400":
+          description: Не верный запрос
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_type"
+              example:
+                timestamp: "2024-08-18T20:58:05.337+00:00"
+                status: 400
+                error: "Bad Request"
+                path: "/api/devices/c890c20b-e90e-47dd-ac9a-41d7af28226b/status"
+  /devices/{id}/commands:
+    post:
+      summary: Отправка команды устройству.
+      description: Отправляет команду устройству (например, «установить температуру 22 градуса»).
+      parameters:
+        - in: path
+          name: id
+          description: Идентификатор устройства
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        "204":
+          description: Команда отправлена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: Тип команды
+                    example: "temp"
+                  value:
+                    type: string
+                    description: Значение
+                    example: "22"
+        "400":
+          description: Не верный запрос
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_type"
+              example:
+                timestamp: "2024-08-18T20:58:05.337+00:00"
+                status: 400
+                error: "Bad Request"
+                path: "/api/devices/c890c20b-e90e-47dd-ac9a-41d7af28226b/commands"
+  /providers/{user_id}:
+    get:
+      summary: Получение провайдеров пользователя.
+      description: Возвращает зарегистрированных провайдеров устройств пользователя.
+      parameters:
+        - in: path
+          name: user_id
+          description: Идентификатор пользователя
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        "200":
+          description: Список провайдеров
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                      description: ID провайдера
+                    provider:
+                      type: object
+                      description: Описание провайдера
+                      properties: 
+                        name:
+                          type: string
+                          description: Имя провайдера
+                        devices:
+                          type: array
+                          description: Список устройств
+                          items:
+                            properties:
+                              extId:
+                                type: string
+                                format: uuid
+                                description: Внешний ID устройства
+                              name: 
+                                type: string
+                                description: Имя устройства
+components:
+  schemas:
+    error_type:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          description: Штамп времени
+          example: "2024-08-18T20:53:11.329+00:00"
+        status:
+          type: integer
+          description: Статус
+          example: 500
+        error:
+          type: string
+          description: Текст ошибки
+          example: "Internal Server Error"
+        path:
+          type: string
+          description: Путь сервиса
+          example: "/api/heating/200"
+    system_type:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Идентификатор системы
+          example: 1
+        targetTemperature:
+          type: number
+          description: Целевая температура
+          example: 20.1
+        currentTemperature:
+          type: number
+          description: Текущая температура
+          example: 18.2
+        on:
+          type: boolean
+          description: Включено
+          example: false

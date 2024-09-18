@@ -29,6 +29,15 @@ public class HeatingSystemServiceImpl implements HeatingSystemService {
     }
 
     @Override
+    public HeatingSystemDto initHeatingSystem(HeatingSystemDto heatingSystemDto) {
+        HeatingSystem h = new HeatingSystem();
+        h.setId(heatingSystemDto.getId());
+        h.setDeviceId(heatingSystemDto.getDeviceId());
+        HeatingSystem updatedHeatingSystem =  heatingSystemRepository.save(h);
+        return convertToDto(updatedHeatingSystem);
+    }
+
+    @Override
     public void turnOn(Long id) {
         HeatingSystem heatingSystem = heatingSystemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("HeatingSystem not found"));
@@ -61,6 +70,7 @@ public class HeatingSystemServiceImpl implements HeatingSystemService {
 
     private HeatingSystemDto convertToDto(HeatingSystem heatingSystem) {
         HeatingSystemDto dto = new HeatingSystemDto();
+        dto.setDeviceId(heatingSystem.getDeviceId());
         dto.setId(heatingSystem.getId());
         dto.setOn(heatingSystem.isOn());
         dto.setTargetTemperature(heatingSystem.getTargetTemperature());

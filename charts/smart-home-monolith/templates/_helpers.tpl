@@ -34,10 +34,12 @@ Create chart name and version as used by the chart label.
 Common labels
 */}}
 {{- define "smart-home-monolith.labels" -}}
+app: {{ .Chart.Name }}
 helm.sh/chart: {{ include "smart-home-monolith.chart" . }}
 {{ include "smart-home-monolith.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}

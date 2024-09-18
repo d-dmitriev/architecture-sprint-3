@@ -1,0 +1,350 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title [C4 System Context diagram] Система Умный Дом
+
+Person(user, "Пользователь", "Пользователь Системы Умный Дом")
+System(system_cont, "Система Умный Дом", "Позволяет регистрировать устройства сторонних производителей и управлять ими")
+Rel(user, system_cont, "Добавляет устройства и управляет ими")
+System_Ext(system_ext, "Сервисы производителей устройств", "Сервисы производителей устройств умного дома для взаимодействия с приложениями пользователей")
+Rel_R(system_cont, system_ext, "Взаимодействие с сервисом производителя для управления устройствами")
+
+@enduml
+
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title [C4 Container diagram] Система Умный Дом
+
+SHOW_PERSON_PORTRAIT()
+
+Person(user, "Пользователь")
+
+Boundary(system_cont, "Система Умный Дом", "Software System") {
+    Container(web_app, "Web Application", $descr="Предоставляет интерфейс для работы с системой Умный Дом")
+    Container(api_gateway, "API Gateway", $descr="Выполняет авторизацию и маршрутизацию запросов от пользовательского интерфейса и внешних систем")
+    Boundary(users, "Сервис регистрации пользователей") {
+        Container(users_service, "Сервис регистрации пользователей", "получение данных телеметрии от устройств")
+        ContainerDb(users_database, "База данных ", $descr="Хранение данных о подключенных устройствах и телеметрии")
+        Rel(users_service, users_database, "Сохраняет и получает данные", "SQL/TCP")
+    }
+    Boundary(scene, "Сервис управления сценариями") {
+        Container(scene_service, "Сервис управления сценариями", "получение данных телеметрии от устройств")
+        ContainerDb(scene_database, "База данных ", $descr="Хранение данных о подключенных устройствах и телеметрии")
+        Rel(scene_service, scene_database, "Сохраняет и получает данные", "SQL/TCP")
+    }
+    Boundary(telemetry, "Сервис телеметрии") {
+        Container(telemetry_service, "Сервис телеметрии", "получение данных телеметрии от устройств")
+        ContainerDb(telemetry_database, "База данных ", $descr="Хранение данных о подключенных устройствах и телеметрии")
+        Rel(telemetry_service, telemetry_database, "Сохраняет и\n получает\n данные", "SQL/TCP")
+    }
+    Boundary(registration, "Сервис регистрации устройств") {
+        Container(registration_service, "Сервис регистрации устройств", "информация об устройствах")
+        ContainerDb(registration_database, "База данных ", $descr="Хранение данных о подключенных устройствах и телеметрии")
+        Rel(registration_service, registration_database, "Сохраняет и\n получает\n данные", "SQL/TCP")
+    }
+    Boundary(devices, "Сервис управления устройствами") {
+        Container(devices_service, "Сервис управления устройствами", "передача команд устройствам")
+        ContainerDb(devices_database, "База данных ", $descr="Хранение данных о подключенных устройствах и телеметрии")
+        Rel(devices_service, devices_database, "Сохраняет и\n получает\n данные", "SQL/TCP")
+    }
+
+    Container(vendor_gw_service, "Сервис взаимодействия с производителем", $descr="Выполняет взаимодействие с сервисами производителя")
+
+    ContainerQueue(queue, "Очереди сообщений", $descr="Очереди сообщений для асинхронного взаимодействия сервисов")
+
+    Rel(api_gateway, vendor_gw_service, "Авторизация приложения", "REST")
+    Rel(api_gateway, telemetry_service, "Вызывает", "REST")
+    Rel(api_gateway, registration_service, "Вызывает", "REST")
+    Rel(api_gateway, devices_service, "Вызывает", "REST")
+    Rel(api_gateway, scene_service, "Вызывает", "REST")
+    Rel(api_gateway, users_service, "Вызывает", "REST")
+
+    Rel(scene_service, queue, "Отправляет и\n получает данные\n из очереди")
+    Rel(devices_service, queue, "Отправляет и\n получает данные\n из очереди")
+    Rel(vendor_gw_service, queue, "Отправляет и\n получает данные\n из очереди")
+
+    Rel(queue, telemetry_service, "Отправляет и\n получает данные\n из очереди")
+    Rel(queue, registration_service, "Отправляет и\n получает данные\n из очереди")
+    Rel(queue, vendor_gw_service, "Отправляет и\n получает данные\n из очереди")
+}
+System_Ext(system_ext, "Сервисы производителей устройств", "Сервисы производителей устройств умного дома для взаимодействия с приложениями пользователей")
+
+Rel(user, web_app, "Настраивает сценарии работы, просматривает телеметрию","HTTPS")
+Rel(user, system_ext, "Подключает\n устройства","HTTPS")
+
+Rel_R(system_ext, api_gateway, "Регистрируются в системе, отправляют данные телеметрии", "REST")
+Rel(web_app, api_gateway, "Вызывает", "REST")
+
+Rel(vendor_gw_service, system_ext, "Вызов сервисов производителя", "REST")
+
+@enduml
+
+
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title [C4 Component diagram] Система Умный Дом - Приложение
+
+Container_Boundary(web_app, "Web Application") {
+    Component(user_ui, "Интерфейс пользователя", "разрабатывается на аутсорcе")
+}
+Container_Boundary(alias3, "API Gateway") {
+    Component(api_gateway, "Istoi")
+}
+Rel(user_ui, api_gateway, "Команды управления")
+
+Container(users, "Сервис регистрации пользователей") {
+    Component(users_api, "API", "получение данных телеметрии от устройств")
+    Component(users_service, "Service", "получение данных телеметрии от устройств")
+    Component(users_adapter_db, "DatabaseAdapter", "взаимодействие с postgres")
+    ComponentDb(users_db, "База данных")
+
+    Rel(users_api, users_service, "1")
+    Rel(users_service, users_adapter_db, "2")
+    Rel(users_adapter_db, users_db, "3")
+}
+
+Container(scene, "Сервис управления сценариями") {
+    Component(scene_api, "API", "получение данных телеметрии от устройств")
+    Component(scene_service, "Service", "получение данных телеметрии от устройств")
+    Component(scene_adapter_db, "DatabaseAdapter", "взаимодействие с postgres")
+    Component(scene_adapter_queue, "QueueAdapter", "взаимодействие с kafka")
+    ComponentDb(scene_db, "База данных")
+
+    Rel(scene_api, scene_service, "1")
+    Rel(scene_service, scene_adapter_db, "2")
+    Rel(scene_service, scene_adapter_queue, "3")
+    Rel(scene_adapter_db, scene_db, "4")
+}
+
+Container(telemetry, "Сервис телеметрии") {
+    Component(telemetry_api, "API", "получение данных телеметрии от устройств")
+    Component(telemetry_service, "Service", "получение данных телеметрии от устройств")
+    Component(telemetry_adapter_db, "DatabaseAdapter", "взаимодействие с postgres")
+    Component(telemetry_adapter_queue, "QueueAdapter", "взаимодействие с kafka")
+    ComponentDb(telemetry_db, "База данных")
+
+    Rel(telemetry_api, telemetry_service, "1")
+    Rel(telemetry_service, telemetry_adapter_db, "2")
+    Rel(telemetry_service, telemetry_adapter_queue, "3")
+    Rel(telemetry_adapter_db, telemetry_db, "4")
+}
+
+Container(registration, "Сервис регистрации устройств") {
+    Component(registration_api, "API", "получение данных телеметрии от устройств")
+    Component(registration_service, "Service", "получение данных телеметрии от устройств")
+    Component(registration_adapter_db, "DatabaseAdapter", "взаимодействие с postgres")
+    Component(registration_adapter_queue, "QueueAdapter", "взаимодействие с kafka")
+    ComponentDb(registration_db, "База данных")
+
+    Rel(registration_api, registration_service, "1")
+    Rel(registration_service, registration_adapter_db, "2")
+    Rel(registration_service, registration_adapter_queue, "3")
+    Rel(registration_adapter_db, registration_db, "4")
+}
+
+Container(devices, "Сервис управления устройствами") {
+     Component(devices_api, "API", "получение данных телеметрии от устройств")
+     Component(devices_service, "Service", "получение данных телеметрии от устройств")
+     Component(devices_adapter_db, "DatabaseAdapter", "взаимодействие с postgres")
+     Component(devices_adapter_queue, "QueueAdapter", "взаимодействие с kafka")
+     ComponentDb(devices_db, "База данных")
+
+     Rel(devices_api, devices_service, "1")
+     Rel(devices_service, devices_adapter_db, "1")
+     Rel(devices_service, devices_adapter_queue, "2")
+     Rel(devices_adapter_db, devices_db, "3")
+}
+
+Container(vendor, "Сервис взаимодействия с производителем") {
+    Component(vendor_api, "API", "получение данных телеметрии от устройств")
+    Component(vendor_service, "Service", "получение данных телеметрии от устройств")
+    Component(vendor_gw, "Шлюз к сервису производителя", "вызов api производителя")
+    Component(vendor_adapter_queue, "QueueAdapter", "взаимодействие с kafka")
+
+    Rel(vendor_api, vendor_service, "1")
+    Rel_R(vendor_service, vendor_gw, "1")
+    Rel(vendor_service, vendor_adapter_queue, "1")
+}
+
+System_Ext(system_ext, "Сервис производителя устройства")
+
+Container_Boundary(broker, "Брокер сообщений") {
+    ComponentQueue(kafka, "Kafka")
+}
+
+Rel(api_gateway, users_api, "Команды управления устройствами")
+Rel(api_gateway, scene_api, "Команды управления устройствами")
+Rel(api_gateway, devices_api, "Команды управления устройствами")
+Rel(api_gateway, vendor_api, "Обработка обратных вызовов")
+Rel(api_gateway, telemetry_api, "Просмотр данных телеметрии")
+Rel(api_gateway, registration_api, "Просмотр информации о зарегистрированных устройствах")
+Rel_R(vendor_gw, system_ext, "Взаимодействие с сервисом производителя")
+
+Rel(system_ext, api_gateway, "Обратные вызовы от сервиса производителя")
+
+Rel(vendor_adapter_queue, kafka, "Публикация данных")
+Rel(devices_adapter_queue, kafka, "Публикация команд")
+Rel(scene_adapter_queue, kafka, "Публикация команд")
+
+Rel(kafka, registration_adapter_queue, "Подписка на данные о регистрации")
+Rel(kafka, telemetry_adapter_queue, "Подписка на телеметрию")
+Rel(kafka, vendor_adapter_queue, "Подписка на команды")
+
+@enduml
+
+@startuml
+title [C4 Code diagram - Sequence diagram] Сервиса взаимодействия с производителем - Добавление устройства
+
+actor Пользователь
+participant "Интерфейс пользователя"
+participant "Сервиса взаимодействия с производителем"
+participant "API Gateway"
+participant "Сервис производителя устройства"
+queue Kafka
+
+Пользователь -> "Интерфейс пользователя" ++ : Выбор производителя
+"Интерфейс пользователя" -> "API Gateway" ++ : Запрос сервиса регистрации
+"API Gateway" --> "Сервиса взаимодействия с производителем" --++ : Перенаправление на шлюз производителя
+"Сервиса взаимодействия с производителем" -> "Сервиса взаимодействия с производителем": Подготовка к переходу на страницу авторизации производителя
+"Сервиса взаимодействия с производителем" -> "Сервис производителя устройства" ++: Вызов страницы авторизации производителя с передачей адреса сервиса обратного вызова
+"Сервис производителя устройства" --> "Пользователь": Отображение пользователю страницы производителя для входа и авторизации
+"Пользователь" -> "Сервис производителя устройства": Ввод логина и пароля, подтверждение авторизации
+"Сервис производителя устройства" --> "API Gateway" --++ : Вызов сервиса обратного вызова с передачей результатов авторизации
+"API Gateway" --> "Сервиса взаимодействия с производителем" -- : Перенаправление на шлюз производителя
+"Сервиса взаимодействия с производителем" -> "Kafka" : Отправка информации об устройстве в "Сервис регистрации устройств"
+"Сервиса взаимодействия с производителем" --> "Интерфейс пользователя" -- : Перенаправление на страницу просмотра результата
+"Интерфейс пользователя" --> "Пользователь" -- : Отображение пользователю страницы с результатом
+@enduml
+
+@startuml
+title [C4 Code diagram - Sequence diagram] Сервис регистрации устройств - Добавление устройства
+
+queue Kafka
+participant "Сервис регистрации устройств"
+database Postgres
+
+"Kafka" -> "Сервис регистрации устройств" ++ : Получение информации об устройстве
+"Сервис регистрации устройств" -> "Postgres" -- : Запись информации об устройстве
+@enduml
+
+@startuml
+title [C4 Code diagram - Sequence diagram] Сервис регистрации устройств - Просмотр информации об устройстве
+
+actor Пользователь
+participant "Интерфейс пользователя"
+participant "API Gateway"
+participant "Сервис регистрации устройств"
+database Postgres
+
+"Пользователь" -> "Интерфейс пользователя" ++ : Получение информации об устройстве
+"Интерфейс пользователя" -> "API Gateway" ++ : Запрос информации о подключенных устройствах
+"API Gateway" -> "Сервис регистрации устройств" ++ : Перенаправление на сервис регистрации
+"Сервис регистрации устройств" -> "Postgres" ++ : Запрос данных из базы
+"Postgres" --> "Сервис регистрации устройств" -- : Получение данных из базы
+"Сервис регистрации устройств" --> "API Gateway" -- :Формирование ответа сервиса
+"API Gateway" --> "Интерфейс пользователя" -- : Отправка ответа в интерфейс пользователя
+"Интерфейс пользователя" --> "Пользователь" -- : Отображение результата
+@enduml
+
+@startuml
+title [Entity relation diagram] Монолит AsIs
+entity temperature_sensors {
+  *id: integer
+  --
+  currentTemperature: number
+  lastUpdated: timestamp
+}
+
+entity heating_systems {
+    *id: number
+    --
+    isOn: boolean
+    targetTemperature: number
+    currentTemperature: number
+}
+@enduml
+
+@startuml
+title [Entity relation diagram]
+package "Сервис регистрации пользователей" {
+    entity User {
+        *id: uuid
+        --
+        *email: test
+        name: test
+        firstName: test
+        lastName: test
+        password: text<<hash>>
+    }
+}
+package "Сервис регистрации устройств" {
+    entity Provider {
+        *id: number
+        --
+        name: string
+        authUrl: string
+    }
+    entity User_Provider {
+        *id: uuid
+        --
+        *user: uuid<<external key>>
+        *provider: number<<FK>>
+        authCode: text
+    }
+    entity User_Device {
+        *id: number
+        --
+        name: text
+        *extId: uuid
+        *userProvider: uuid<<FK>>
+    }
+    User_Provider }|--|| Provider
+    User_Device }|--|| User_Provider
+}
+
+package "Сервис телеметрии" {
+    entity Telemetry {
+        *id: uuid
+        --
+        *device_id: uuid<<external key>>
+        current_value_double: double
+        current_value_integer: integer
+        current_value_string: text
+        *last_updated: timestamp
+    }
+}
+
+package "Сервис управления устройствами" {
+    entity Devices {
+        *device_id: uuid<<external key>>
+        --
+        *name: string
+        *status: string
+        *user_id: uuid<<external key>>
+    }
+}
+
+package "Сервис управления сценариями" {
+    entity Scene {
+        *id: number
+        --
+        name: text
+        startTime: time
+        endTime: time
+        enabled: boolean
+        *user: uuid<<external key>>
+    }
+    entity Scene_Device {
+        *id: number
+        --
+        *sceneId: number
+        *userDevice: uuid<<external key>>
+    }
+    Scene }|--|{ Scene_Device
+}
+
+Telemetry }|--|| Devices
+User_Provider }|--|| User
+@enduml
