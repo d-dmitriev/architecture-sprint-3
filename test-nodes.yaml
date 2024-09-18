@@ -35,8 +35,10 @@ kind: Ingress
 metadata:
   name: ingress-web
 spec:
+  ingressClassName: nginx
   rules:
-  - http:
+  - host: foo.k8s.local
+    http:
       paths:
       - path: /
         pathType: Prefix
